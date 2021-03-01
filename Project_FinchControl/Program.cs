@@ -20,8 +20,8 @@ namespace Project_FinchControl
     // **************************************************
 
     class Program
-    
-    
+
+
     {
         /// <summary>
         /// first method run when the app starts up
@@ -47,7 +47,7 @@ namespace Project_FinchControl
             DisplayMenuScreen();
             DisplayClosingScreen();
         }
-        
+
         /// <summary>
         /// setup the console theme
         /// </summary>
@@ -75,7 +75,7 @@ namespace Project_FinchControl
             edgar.wait(afterWait);
 
         }
-        
+
         /// <summary>
         /// Show robot connect with lights sound and movement
         /// </summary>
@@ -146,7 +146,7 @@ namespace Project_FinchControl
                         break;
 
                     case "c":
-
+                        DataRecorderDisplayMenu(edgar);
                         break;
 
                     case "d":
@@ -216,7 +216,7 @@ namespace Project_FinchControl
                     case "b":
 
                         TalentShowFlashLights(edgar);
-                        
+
                         break;
 
                     case "c":
@@ -251,10 +251,10 @@ namespace Project_FinchControl
 
         //    TalentShowDanceToMario(edgar);
 
-            
+
 
         //}
-        
+
         static void TalentShowDanceToMario(Finch edgar)
         {
             DisplayScreenHeader("Dance to Music");
@@ -280,14 +280,14 @@ namespace Project_FinchControl
         /// </summary>
         /// <param name="edgar"></param>
         static void TalentShowPlayTaps(Finch edgar)
-        {           
+        {
 
             Console.CursorVisible = false;
 
             DisplayScreenHeader("Play a sad song");
 
             Console.WriteLine("\tEdgar will now play a sad song for you!");
-            
+
             DisplayContinuePrompt();
 
             ////
@@ -449,7 +449,7 @@ namespace Project_FinchControl
             edgar.wait(afterWait);
 
         }
-        
+
         /// <summary>
         /// Play the Mario Bros Song, Light up and dance
         /// </summary>
@@ -473,7 +473,7 @@ namespace Project_FinchControl
             edgar.setMotors(p, s);
         }
 
-        
+
 
         #endregion
 
@@ -500,7 +500,7 @@ namespace Project_FinchControl
 
             DisplayMenuPrompt("Main Menu");
         }
-        
+
         /// <summary>
         /// Connect the Finch Robot
         /// </summary>
@@ -520,7 +520,7 @@ namespace Project_FinchControl
             ShowEdgarConnect(edgar);
 
             robotConnected = edgar.connect();
-                       
+
             DisplayMenuPrompt("Main Menu");
 
             //
@@ -658,11 +658,470 @@ namespace Project_FinchControl
             DisplayMenuPrompt("Talent Show Menu");
         }
 
+        static int DataRecorderDisplayGetNumberOfDataPoints()
+        {
+            int numberOfDataPoints;
+            DisplayScreenHeader("Number of Date Points");
+            Console.Write("\tNumber of Data Points: ");
+            numberOfDataPoints = int.Parse(Console.ReadLine());
+
+            //need to validate the number
+
+            Console.WriteLine($"You chose {numberOfDataPoints} as the number of data points.");
+            DisplayContinuePrompt();
 
 
+
+            return numberOfDataPoints;
+        }
+
+        static void DisplayHeader(string headerText)
+        {
+            Console.Clear();
+            Console.WriteLine();
+            Console.WriteLine("\t\t" + headerText);
+            Console.WriteLine();
+        }
+
+        static double DataRecorderDisplayGetDataPointFrequency()
+        {
+            double numberOfDataFrequency;
+            DisplayHeader("Number of Data Frequency");
+            Console.Write("\tEnter the desired frequency of measurements: ");
+            numberOfDataFrequency = double.Parse(Console.ReadLine());
+
+            //need to validate the number
+
+            Console.WriteLine($"You chose {numberOfDataFrequency} as the number of data points.");
+            DisplayContinuePrompt();
+
+
+
+            return numberOfDataFrequency;
+        }
+
+        static double[] DataRecorderDisplayGetDataPointFrequency(int numberOfDataPoints, double dataPointFrequency, Finch edgar)
+        {
+            double[] temperatures = new double[numberOfDataPoints];
+            int dataPointFrequencyMs;
+
+            //
+            // convert the frequency in seconds to milliseconds
+
+            dataPointFrequencyMs = (int)(dataPointFrequency * 1000);
+
+            DisplayHeader("Data Frequency");
+
+
+            // echo the values
+
+            Console.WriteLine($"\tThe Finch Robot will now record {numberOfDataPoints} temperatures {dataPointFrequency} seconds apart.");
+            Console.WriteLine("\tPress any key to begin");
+            Console.ReadKey();
+
+            for (int index = 0; index < numberOfDataPoints; index++)
+            {
+                temperatures[index] = edgar.getTemperature();
+                edgar.wait(dataPointFrequencyMs);
+
+                //
+                // echo new temperature
+
+                Console.WriteLine($"\tTemperature {index + 1}: {temperatures[index]}");
+                edgar.wait(dataPointFrequencyMs);
+
+                DataRecorderDisplayData(temperatures);
+
+            }
+
+            return temperatures;
+        }
+
+        static void DataRecorderDisplayGetData1(double[] temperatures)
+        {
+            DisplayHeader("Display get data");
+
+            //
+            // disply table of temperatures
+
+            Console.WriteLine();
+            Console.WriteLine(
+                "Reading Number".PadLeft(20) +
+                "Temperature".PadLeft(15));
+            Console.WriteLine(
+                "-------------".PadLeft(20) +
+                "-----------------".PadLeft(15));
+
+
+            for (int index = 0; index < temperatures.Length; index++)
+            {
+                Console.WriteLine(
+                    (index + 1).ToString().PadLeft(20) +
+                    "(temperatures[index])".PadLeft(15));
+            }
+        }
+
+        static void DataRecorderDisplayMenu(Finch edgar)
+        {
+            Console.CursorVisible = true;
+
+            bool quitApplication = false;
+            int numberOfDataPoints = 0;
+            double dataPointFrequency = 0;
+            double[] temperatures = null;
+            string menuChoice;
+
+            do
+            {
+                DisplayHeader("Main Menu");
+
+                //
+                // get user menu choice
+                //
+                Console.WriteLine("\ta) Number of Data Points");
+                Console.WriteLine("\tb) Frequency of Data Points");
+                Console.WriteLine("\tc) Get temperature data");
+                Console.WriteLine("\td) Show Temperature data");
+                Console.WriteLine("\te) ");
+                Console.WriteLine("\tf) Disconnect Finch Robot");
+                Console.WriteLine("\tq) Quit");
+                Console.Write("\t\tEnter Choice:");
+                menuChoice = Console.ReadLine().ToLower();
+
+                //
+                // process user menu choice
+                //
+                switch (menuChoice)
+                {
+                    case "a":
+                        numberOfDataPoints = DataRecorderDisplayGetNumberOfDataPoints();
+                        break;
+
+                    case "b":
+                        dataPointFrequency = DataRecorderDisplayGetDataPointFrequency();
+                        break;
+
+                    case "c":
+                        temperatures = DataRecorderDisplayGetData(numberOfDataPoints, dataPointFrequency, edgar);
+                        break;
+
+                    case "d":
+                        DataRecorderDisplayData(temperatures);
+                        break;
+
+                    case "e":
+
+                        break;
+
+                    case "f":
+                        DisplayDisconnectFinchRobot(edgar);
+                        break;
+
+                    case "q":
+                        DisplayDisconnectFinchRobot(edgar);
+                        quitApplication = true;
+                        break;
+
+                    default:
+                        Console.WriteLine();
+                        Console.WriteLine("\tPlease enter a letter for the menu choice.");
+                        DisplayContinuePrompt();
+                        break;
+                }
+
+            } while (!quitApplication);
+        }
+
+
+
+        static double[] DataRecorderDisplayGetData(int numberOfDataPoints, double dataPointFrequency, Finch edgar)
+        {
+            double[] conversion = new double[numberOfDataPoints];
+            double[] temperatures = new double[numberOfDataPoints];
+            int dataPointFrequencyMs;
+
+            //
+            // convert the frequency in seconds to milliseconds
+
+            dataPointFrequencyMs = (int)(dataPointFrequency * 1000);
+
+            DisplayHeader("Get Data");
+
+
+
+            // echo the values
+
+            Console.WriteLine($"\tThe Finch Robot will now record {numberOfDataPoints} temperatures {dataPointFrequency} seconds apart.");
+            Console.WriteLine("\tPress any key to begin");
+            Console.ReadKey();
+
+            for (int index = 0; index < numberOfDataPoints; index++)
+            {
+                temperatures[index] = edgar.getTemperature();
+                edgar.wait(dataPointFrequencyMs);
+                conversion[index] = ConvertCelsiusToFarenheit(temperatures[index]);
+
+
+                //
+                // echo new temperature
+
+                Console.WriteLine($"\tTemperature {index + 1}: {temperatures[index].ToString("n2")}");
+                edgar.wait(dataPointFrequencyMs);
+
+
+            }
+
+
+            return temperatures;
+        }
+
+        static void DataRecorderDisplayData(double[] temperatures)
+        {
+            //
+            // disply table of temperatures
+            Console.Clear();
+            Console.WriteLine();
+            Console.WriteLine("\tReading in Reading in Farenhiet");
+            Console.WriteLine();
+            Console.WriteLine(
+                "Reading Number".PadLeft(20) +
+                "Temperature".PadLeft(15));
+            Console.WriteLine(
+                "-------------".PadLeft(20) +
+                "-----------------".PadLeft(15));
+
+
+            for (int index = 0; index < temperatures.Length; index++)
+            {
+
+
+
+
+                Console.WriteLine(
+                    (index + 1).ToString("n1").PadLeft(20) +
+                    (temperatures[index]).ToString("n1").PadLeft(15));
+
+
+            }
+
+            DisplayContinuePrompt();
+
+        }
+
+        static double ConvertCelsiusToFarenheit(double celsiusReading)
+        {
+            return (double)(celsiusReading * 1.8 + 32);
+        }
 
         #endregion
+
+        static void AlarmSystemDisplayAlarmMenu(Finch edgar)
+        {
+            Console.CursorVisible = true;
+
+            bool quitApplication = false;
+            string menuChoice;
+
+
+            string sensorsToMonitor = "";
+            string rangeType = "";
+            int minMaxThreshholdValue = 0;
+            int timeToMonitor = 0;
+
+            do
+            {
+                DisplayHeader("Main Menu");
+
+                //
+                // get user menu choice
+                //
+                Console.WriteLine("\ta) Set sensors to monitor");
+                Console.WriteLine("\tb) Set range type");
+                Console.WriteLine("\tc) Set Min/Max Threshold Value");
+                Console.WriteLine("\td) Set time to Monitor");
+                Console.WriteLine("\te) Set alarm");
+                Console.WriteLine("\tf) Disconnect Finch Robot");
+                Console.WriteLine("\tq) Quit");
+                Console.Write("\t\tEnter Choice:");
+                menuChoice = Console.ReadLine().ToLower();
+
+                //
+                // process user menu choice
+                //
+                switch (menuChoice)
+                {
+                    case "a":
+                        sensorsToMonitor = AlarmSystemDisplaySetSensors();
+                        break;
+
+                    case "b":
+                        rangeType = AlarmSystemDisplayRangeType();
+                        break;
+
+                    case "c":
+                        minMaxThreshholdValue = AlarmSystemDisplaythreshholdValue(sensorsToMonitor, edgar);
+                        break;
+
+                    case "d":
+                        timeToMonitor = AlarmSystemDisplayTimeToMonitor();
+                        break;
+
+                    case "e":
+                        AlarmSystemSetAlarm(edgar, sensorsToMonitor, rangeType, minMaxThreshholdValue, timeToMonitor);
+                        break;
+
+                    case "f":
+                        DisplayDisconnectFinchRobot(edgar);
+                        break;
+
+                    case "q":
+                        DisplayDisconnectFinchRobot(edgar);
+                        quitApplication = true;
+                        break;
+
+                    default:
+                        Console.WriteLine();
+                        Console.WriteLine("\tPlease enter a letter for the menu choice.");
+                        DisplayContinuePrompt();
+                        break;
+                }
+
+            } while (!quitApplication);
+
+        }
+
+        static int AlarmSystemDisplayTimeToMonitor()
+        {
+            int timeToMonitor = 0;
+
+            DisplayScreenHeader("Time to monitor");
+            Console.Write("\tEnter Time to Monitor");
+
+            timeToMonitor = int.Parse(Console.ReadLine());
+
+            return timeToMonitor;
+
+
+        }
+
+        static int AlarmSystemDisplaythreshholdValue(string sensorsToMonitor, Finch edgar)
+        {
+            int thresholdValue = 0;
+            int currentLeftSensorValue = edgar.getLeftLightSensor();
+            int currentRightSensorValue = edgar.getRightLightSensor();
+
+            DisplayScreenHeader("threshold Value");
+
+            switch (sensorsToMonitor)
+            {
+                case "left":
+                    Console.WriteLine($"Current {sensorsToMonitor} Sensor Value: {currentLeftSensorValue}");
+                    break;
+
+                case "right":
+                    Console.WriteLine($"Current {sensorsToMonitor} Sensor Value: {currentRightSensorValue}");
+                    break;
+
+                case "both":
+                    Console.WriteLine($"Current {sensorsToMonitor} Sensor Value: {currentLeftSensorValue}");
+                    Console.WriteLine($"Current {sensorsToMonitor} Sensor Value: {currentRightSensorValue}");
+                    break;
+
+                default:
+                    Console.WriteLine("\tUnkown Sensor Reference");
+                    break;
+            }
+
+            //
+            // get threshold from user
+            //
+
+            Console.Write("Enter Threshold Value: ");
+            thresholdValue = int.Parse(Console.ReadLine());
+
+            // validate user inpute=s
+            //dont int.parse liek above
+
+
+
+
+            return thresholdValue;
+        }
+
+        static string AlarmSystemDisplayRangeType()
+        {
+            string rangeType = "";
+
+            DisplayScreenHeader("Range Type");
+
+            Console.Write("Enter Range Type [minimum, Maximum]");
+            rangeType = Console.ReadLine();
+
+            DisplayMenuPrompt("Alarm Ssytem");
+
+            return rangeType; ;
+        }
+
+        static string AlarmSystemDisplaySetSensors()
+        {
+            string sensorsToMonitor = "";
+
+            DisplayScreenHeader("Sensors to Monitor");
+
+            Console.Write("Enter Sensors to Monitor [Left, Right, both]");
+            sensorsToMonitor = Console.ReadLine();
+
+            DisplayMenuPrompt("Alarm Ssytem");
+
+            return sensorsToMonitor;
+        }
+
+        static void AlarmSystemSetAlarm
+            (
+            object edgar,
+            string sensorsToMonitor,
+            string rangeType,
+            int minMaxThreshholdValue,
+            int timeToMonitor
+            )
+
+        {
+            DisplayScreenHeader("Set Alarm");
+
+            //echo values to user
+            Console.WriteLine("\tStart");
+
+            //promt user to start
+            Console.ReadKey();
+
+            switch (sensorsToMonitor)
+            {
+                case "left":
+
+                    break;
+
+                case "right":
+
+                    break;
+
+                case "both":
+
+                    break;
+
+                default:
+                    Console.WriteLine("\tUnkown Sensor Reference");
+                    break;
+            }
+
+
+        }
+
+
+
+
+
     }
-
-
 }
+
+
+
