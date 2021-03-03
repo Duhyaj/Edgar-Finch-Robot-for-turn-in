@@ -162,7 +162,6 @@ namespace Project_FinchControl
                         break;
 
                     case "q":
-                        DisplayDisconnectFinchRobot(edgar);
                         quitApplication = true;
                         break;
 
@@ -517,15 +516,16 @@ namespace Project_FinchControl
             Console.WriteLine("\tAbout to connect to Finch robot. Please be sure the USB cable is connected to the robot and computer now.");
             DisplayContinuePrompt();
 
-            ShowEdgarConnect(edgar);
-
             robotConnected = edgar.connect();
+
+            ShowEdgarConnect(edgar);
 
             DisplayMenuPrompt("Main Menu");
 
             //
             // reset finch robot
             //
+
             edgar.setLED(0, 0, 0);
             edgar.noteOff();
 
@@ -667,7 +667,7 @@ namespace Project_FinchControl
 
             //need to validate the number
 
-            Console.WriteLine($"You chose {numberOfDataPoints} as the number of data points.");
+            Console.WriteLine($"\tYou chose {numberOfDataPoints} as the number of data points.");
             DisplayContinuePrompt();
 
 
@@ -692,7 +692,7 @@ namespace Project_FinchControl
 
             //need to validate the number
 
-            Console.WriteLine($"You chose {numberOfDataFrequency} as the number of data points.");
+            Console.WriteLine($"\tYou chose {numberOfDataFrequency} as the number of data points.");
             DisplayContinuePrompt();
 
 
@@ -782,8 +782,7 @@ namespace Project_FinchControl
                 Console.WriteLine("\tb) Frequency of Data Points");
                 Console.WriteLine("\tc) Get temperature data");
                 Console.WriteLine("\td) Show Temperature data");
-                Console.WriteLine("\te) ");
-                Console.WriteLine("\tf) Disconnect Finch Robot");
+                Console.WriteLine("\te) Disconnect Finch Robot");
                 Console.WriteLine("\tq) Quit");
                 Console.Write("\t\tEnter Choice:");
                 menuChoice = Console.ReadLine().ToLower();
@@ -810,10 +809,6 @@ namespace Project_FinchControl
                         break;
 
                     case "e":
-
-                        break;
-
-                    case "f":
                         DisplayDisconnectFinchRobot(edgar);
                         break;
 
@@ -899,7 +894,7 @@ namespace Project_FinchControl
 
                 Console.WriteLine(
                     (index + 1).ToString("n1").PadLeft(20) +
-                    (temperatures[index]).ToString("n1").PadLeft(15));
+                    (ConvertCelsiusToFarenheit(temperatures[index])).ToString("n1").PadLeft(15));
 
 
             }
@@ -1068,7 +1063,7 @@ namespace Project_FinchControl
 
             DisplayScreenHeader("Sensors to Monitor");
 
-            Console.Write("Enter Sensors to Monitor [Left, Right, both]");
+            Console.Write("\tEnter Sensors to Monitor [Left, Right, both]");
             sensorsToMonitor = Console.ReadLine();
 
             DisplayMenuPrompt("Alarm Ssytem");
@@ -1078,7 +1073,7 @@ namespace Project_FinchControl
 
         static void AlarmSystemSetAlarm
             (
-            object edgar,
+            Finch edgar,
             string sensorsToMonitor,
             string rangeType,
             int minMaxThreshholdValue,
@@ -1086,13 +1081,148 @@ namespace Project_FinchControl
             )
 
         {
+
+            bool thresholdExceeded = false;
+            int secondsElapsed = 1;
+            int leftLightSensorValue;
+            int rightLightSensorValue;
+
+
             DisplayScreenHeader("Set Alarm");
 
             //echo values to user
-            Console.WriteLine("\tStart");
+            Console.WriteLine("\t\tStart");
 
             //promt user to start
             Console.ReadKey();
+
+            do
+            {
+
+                //
+                // get and display current light levels
+                //
+
+                leftLightSensorValue = edgar.getLeftLightSensor();
+                rightLightSensorValue = edgar.getRightLightSensor();
+
+                switch (sensorsToMonitor)
+                {
+                    case "left":
+                        Console.WriteLine($"\tCurrent Left Light Sensor: {leftLightSensorValue}");
+                        break;
+
+                    case "right":
+                        Console.WriteLine($"\tCurrent Right Light Sensor: {rightLightSensorValue}");
+                        break;
+
+                    case "both":
+                        Console.WriteLine($"\tCurrent Left Light Sensor: {leftLightSensorValue}");
+                        Console.WriteLine($"\tCurrent Right Light Sensor: {rightLightSensorValue}");
+                        break;
+
+                    default:
+                        Console.WriteLine("\tUnkown Sensor Reference");
+                        break;
+                }
+
+                //
+                // wait 1 second
+                //
+
+                edgar.wait(1000);
+                secondsElapsed++;
+
+                //
+                // test for threshold exceeded
+                //
+
+                switch (sensorsToMonitor)
+                {
+                    case "left":
+                        if (rangeType == "minimum")
+                        {
+                            thresholdExceeded = (leftLightSensorValue < minMaxThreshholdValue);
+                        }
+
+                        //max
+
+                        else
+                        {
+                            thresholdExceeded = (leftLightSensorValue > minMaxThreshholdValue);
+                        }
+
+                        break;
+
+                    case "right":
+                        if (rangeType == "minimum")
+                        {
+                            if (rightLightSensorValue < minMaxThreshholdValue)
+                            {
+                                thresholdExceeded = true;
+                            }
+                        }
+
+                        // max
+
+                        else
+                        {
+                            if (rightLightSensorValue > minMaxThreshholdValue)
+                            {
+                                thresholdExceeded = true;
+                            }
+                        }
+                        break;
+
+                    case "both":
+                        if (rangeType == "minimum")
+                        {
+                            if ( (leftLightSensorValue < minMaxThreshholdValue) || (rightLightSensorValue < minMaxThreshholdValue) )
+                            {
+                                thresholdExceeded = true;
+                            }
+                        }
+
+                        // max
+
+                        else
+                        {
+                            if ((leftLightSensorValue > minMaxThreshholdValue) || (rightLightSensorValue > minMaxThreshholdValue))
+                            {
+                                thresholdExceeded = true;
+                            }
+                        }
+
+                        break;
+
+                    default:
+                        Console.WriteLine("\tUnkown Sensor Reference");
+                        break;
+                }
+
+
+
+
+            } while (!thresholdExceeded && (secondsElapsed <= timeToMonitor));
+
+
+            //
+            // Display result
+            //
+
+            if (thresholdExceeded)
+            {
+                Console.WriteLine("\tThreshold Exceeded");
+            }
+
+            else
+            {
+                Console.WriteLine("\tThreshold Not Exceeded - time limit exceeded");
+            }
+
+
+
+
 
             switch (sensorsToMonitor)
             {
@@ -1112,6 +1242,8 @@ namespace Project_FinchControl
                     Console.WriteLine("\tUnkown Sensor Reference");
                     break;
             }
+
+
 
 
         }
