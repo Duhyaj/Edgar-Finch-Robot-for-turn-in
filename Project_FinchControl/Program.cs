@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using FinchAPI;
+using System.Linq;
 
 
 namespace Project_FinchControl
@@ -105,7 +106,7 @@ namespace Project_FinchControl
                 Console.WriteLine("\tb) Talent Show");
                 Console.WriteLine("\tc) Data Recorder");
                 Console.WriteLine("\td) Alarm System");
-                Console.WriteLine("\te) User Programming");
+                Console.WriteLine("\te) ");
                 Console.WriteLine("\tf) Disconnect Finch Robot");
                 Console.WriteLine("\tq) Quit");
                 Console.Write("\t\tEnter Choice:");
@@ -129,7 +130,7 @@ namespace Project_FinchControl
                         break;
 
                     case "d":
-
+                        AlarmSystemDisplayAlarmMenu(edgar);
                         break;
 
                     case "e":
@@ -155,16 +156,374 @@ namespace Project_FinchControl
             } while (!quitApplication);
         }
 
-        #region Alarm System
 
+
+        //#region Alarm System Temperature
+
+        ///// <summary>
+        ///// Main Alarm menu
+        ///// </summary>
+        ///// <param name="edgar"></param>
+        //static void AlarmSystemDisplayTempAlarmMenu(Finch edgar)
+        //{
+        //    Console.CursorVisible = true;
+
+        //    bool quitApplication = false;
+        //    string menuChoice;
+        //    string sensorsToMonitor = "";
+        //    double numberOfDataPoints = 0;
+        //    int minMaxThreshholdValue = 0;
+        //    int timeToMonitor = 0;
+
+        //    do
+        //    {
+        //        DisplayScreenHeader("Main Menu");
+
+        //        //
+        //        // get user menu choice
+        //        //
+        //        Console.WriteLine("\ta) Set Temperature Data Points");
+        //        Console.WriteLine("\tb) Set range type");
+        //        Console.WriteLine("\tc) Set Min/Max Threshold Value");
+        //        Console.WriteLine("\td) Set time to Monitor");
+        //        Console.WriteLine("\te) Set alarm");
+        //        Console.WriteLine("\tf) Disconnect Finch Robot");
+        //        Console.WriteLine("\tq) Quit");
+        //        Console.Write("\t\tEnter Choice:");
+        //        menuChoice = Console.ReadLine().ToLower();
+
+        //        //
+        //        // process user menu choice
+        //        //
+        //        switch (menuChoice)
+        //        {
+        //            case "a":
+
+        //                numberOfDataPoints = AlarmDisplayGetNumberOfTempDataPoints(numberOfDataPoints, edgar);
+
+        //                break;
+
+
+        //            case "b":
+
+        //                timeToMonitor = AlarmSystemDisplayTempTimeToMonitor();
+
+        //                break;
+
+        //            case "c":
+
+        //                minMaxThreshholdValue = AlarmSystemDisplayTempthreshholdValue(edgar);
+
+        //                break;
+
+        //            case "d":
+
+        //                AlarmSystemSetTempAlarm(edgar, sensorsToMonitor, minMaxThreshholdValue, timeToMonitor);
+
+        //                break;
+
+        //            case "e":
+
+
+
+        //                break;
+
+        //            case "f":
+        //                DisplayDisconnectFinchRobot(edgar);
+        //                break;
+
+        //            case "q":
+        //                DisplayDisconnectFinchRobot(edgar);
+        //                quitApplication = true;
+        //                break;
+
+        //            default:
+        //                Console.WriteLine();
+        //                Console.WriteLine("\tPlease enter a letter for the menu choice.");
+        //                DisplayContinuePrompt();
+        //                break;
+        //        }
+
+        //    } while (!quitApplication);
+
+        //}
+
+        //static int AlarmDisplayGetNumberOfTempDataPoints(double numberOfDataPoints, Finch edgar)
+        //{
+        //    double numberOfDataPoints;
+        //    string userResponse;
+        //    bool validResponse = true;
+
+        //    DisplayScreenHeader("Number of Data Points");
+
+        //    do
+        //    {
+        //        Console.Write("\tEnter the desired number of measurements: ");
+        //        userResponse = Console.ReadLine();
+        //        validResponse = double.TryParse(userResponse, out numberOfDataPoints);
+
+        //        if (!validResponse)
+        //        {
+        //            Console.WriteLine("\tPlease enter a number 1,2,3.4, ... etc.");
+        //            Console.WriteLine();
+        //        }
+
+        //    } while (!validResponse);
+
+        //    Console.WriteLine($"\tYou chose {numberOfDataPoints} as the number of data points.");
+        //    DisplayContinuePrompt();
+
+        //    return (int)numberOfDataPoints;
+
+        //}
+
+        ///// <summary>
+        ///// Getting frequency of readings
+        ///// </summary>
+        ///// <returns></returns>
+        //static int AlarmSystemDisplayTempTimeToMonitor()
+        //{
+        //    DisplayScreenHeader("Time to monitor");
+        //    {
+        //        string userResponse;
+        //        bool validResponse = true;
+        //        int timeToMonitor = 0;
+
+        //        do
+        //        {
+        //            Console.Write("\tEnter the desired frequency of measurements: ");
+        //            userResponse = Console.ReadLine();
+        //            validResponse = int.TryParse(userResponse, out timeToMonitor);
+
+        //            if (!validResponse)
+        //            {
+        //                Console.WriteLine("\tPlease enter a number 1,2,3.4, ... etc.");
+        //                Console.WriteLine();
+        //            }
+
+        //        } while (!validResponse);
+
+        //        Console.WriteLine($"\tYou chose {timeToMonitor} as the frequency data readings.");
+        //        DisplayContinuePrompt();
+
+        //        return timeToMonitor;
+        //    }
+        //}
+
+        ///// <summary>
+        ///// Getting the Threshold value for alarm state
+        ///// </summary>
+        ///// <param name="sensorsToMonitor"></param>
+        ///// <param name="edgar"></param>
+        ///// <returns></returns>
+        //static int AlarmSystemDisplayTempthreshholdValue(Finch edgar)
+        //{
+        //    int thresholdValue = 0;
+
+        //    string userResponse;
+        //    bool validResponse = true;
+
+        //    DisplayScreenHeader("threshold Value");
+
+        //    do
+        //    {
+        //        Console.Write("\tEnter the desired frequency of measurements: ");
+        //        userResponse = Console.ReadLine();
+        //        validResponse = int.TryParse(userResponse, out thresholdValue);
+
+        //        if (!validResponse)
+        //        {
+        //            Console.WriteLine("\tPlease enter a number 1,2,3.4, ... etc.");
+        //            Console.WriteLine();
+        //        }
+
+        //    } while (!validResponse);
+
+
+
+        //    return thresholdValue;
+        //}
+
+        ///// <summary>
+        ///// Get user input for min max range type including min max and full words
+        ///// </summary>
+        ///// <returns></returns>
+
+        //static string AlarmSystemDisplayTempRangeType()
+        //{
+        //    string rangeType = "";
+
+        //    DisplayScreenHeader("Range Type");
+
+        //    //
+        //    // validate user input
+        //    //
+
+        //    rangeType = ValidateStringInput
+        //        (
+        //        "\tEnter range type [Minimum, Maximum]: ",
+        //        "\tPlease use Minimum or Maximum",
+        //        new string[] { "Minimum", "Maximum" }
+        //        );
+
+        //    Console.WriteLine();
+        //    Console.WriteLine($"\tEdgar will now monitor until {rangeType} threshold is reached");
+        //    Console.CursorVisible = false;
+
+        //    DisplayMenuPrompt("Alarm Sytem");
+
+        //    return rangeType;
+        //}
+
+        ///// <summary>
+        ///// Setting the alarm to start and display results
+        ///// </summary>
+        ///// <param name="edgar">Finch Robot</param>
+        ///// <param name="sensorsToMonitor">which sensors were chosen</param>
+        ///// <param name="rangeType">min or max</param>
+        ///// <param name="minMaxThreshholdValue">threshold choice</param>
+        ///// <param name="timeToMonitor">timeToMonitor</param>
+        //static void AlarmSystemSetTempAlarm
+        //    (
+        //    Finch edgar,
+        //    double currentTemperature,
+        //    string rangeType,
+        //    int minMaxThreshholdValue,
+        //    int timeToMonitor
+        //    )
+
+        //{
+        //    bool thresholdExceeded = false;
+        //    int secondsElapsed = 1;
+        //    int leftLightSensorValue;
+        //    int rightLightSensorValue;
+
+
+        //    DisplayScreenHeader("Set Alarm");
+
+        //    Console.WriteLine($"\tYou have chosen to monitor {rangeType} threshold, until it reaches {minMaxThreshholdValue}, or {timeToMonitor} seconds");
+        //    Console.WriteLine();
+        //    Console.CursorVisible = false;
+        //    Console.WriteLine("\tPress any key to begin");
+
+        //    //promt user to start
+        //    Console.ReadKey();
+
+        //    do
+        //    {
+        //        //
+        //        // get and display current light levels
+        //        //
+
+        //        currentTemperature = edgar.getTemperature();
+
+        //        //
+        //        // wait 1 second
+        //        //
+
+        //        edgar.wait(1000);
+        //        secondsElapsed++;
+
+        //        //
+        //        // test for threshold exceeded
+        //        //
+
+
+        //                if (rangeType == "minimum" || rangeType == "min" || rangeType == "Minimum" || rangeType == "Min")
+        //                {
+        //                    thresholdExceeded = (leftLightSensorValue < minMaxThreshholdValue);
+        //                }
+
+        //                //max
+
+        //                else
+        //                {
+        //                    thresholdExceeded = (leftLightSensorValue > minMaxThreshholdValue);
+        //                }
+
+  
+
+        //                    }
+        //                }
+
+        //                // max
+
+        //                else
+        //                {
+        //                    if ((leftLightSensorValue > minMaxThreshholdValue) || (rightLightSensorValue > minMaxThreshholdValue))
+        //                    {
+        //                        thresholdExceeded = true;
+        //                        Console.WriteLine("\tThreshold has been exceeded Press any key to continue");
+        //                        Console.ReadKey();
+        //                    }
+        //                }
+
+        //                break;
+
+        //            default:
+        //                Console.WriteLine("\tUnkown Sensor Reference");
+        //                break;
+        //        }
+
+        //    } while (!thresholdExceeded && (secondsElapsed <= timeToMonitor));
+
+        //    if (thresholdExceeded)
+        //    {
+        //        Console.WriteLine();
+        //        Console.WriteLine("\tThreshold Exceeded");
+        //        Console.WriteLine();
+        //        Console.WriteLine("\tPress any key to continue");
+        //        Console.ReadKey();
+        //    }
+
+        //    else
+        //    {
+        //        Console.WriteLine();
+        //        Console.WriteLine("\tThreshold Not Exceeded - time limit exceeded");
+        //        Console.WriteLine();
+        //        Console.WriteLine("\tPress any key to continue");
+        //        Console.ReadKey();
+        //    }
+
+        //    //
+        //    // Display result
+        //    //
+
+        //    switch (sensorsToMonitor)
+        //    {
+        //        case "Left":
+
+        //            break;
+
+        //        case "Right":
+
+        //            break;
+
+        //        case "Both":
+
+        //            break;
+
+        //        default:
+        //            Console.WriteLine("\tUnkown Sensor Reference");
+        //            break;
+        //    }
+
+        //}
+
+        //#endregion
+
+        #region Alarm System Lighting meter
+
+        /// <summary>
+        /// Main Alarm menu
+        /// </summary>
+        /// <param name="edgar"></param>
         static void AlarmSystemDisplayAlarmMenu(Finch edgar)
         {
             Console.CursorVisible = true;
 
             bool quitApplication = false;
             string menuChoice;
-
-
             string sensorsToMonitor = "";
             string rangeType = "";
             int minMaxThreshholdValue = 0;
@@ -232,92 +591,163 @@ namespace Project_FinchControl
 
         }
 
+        /// <summary>
+        /// Getting frequency of readings
+        /// </summary>
+        /// <returns></returns>
         static int AlarmSystemDisplayTimeToMonitor()
         {
-            int timeToMonitor = 0;
-
             DisplayScreenHeader("Time to monitor");
-            Console.Write("\tEnter Time to Monitor");
+            {
+                string userResponse;
+                bool validResponse = true;
+                int timeToMonitor = 0;
 
-            timeToMonitor = int.Parse(Console.ReadLine());
+                do
+                {
+                    Console.Write("\tEnter the desired frequency of measurements: ");
+                    userResponse = Console.ReadLine();
+                    validResponse = int.TryParse(userResponse, out timeToMonitor);
 
-            return timeToMonitor;
+                    if (!validResponse)
+                    {
+                        Console.WriteLine("\tPlease enter a number 1,2,3.4, ... etc.");
+                        Console.WriteLine();
+                    }
 
+                } while (!validResponse);
 
+                Console.WriteLine($"\tYou chose {timeToMonitor} as the frequency data readings.");
+                DisplayContinuePrompt();
+
+                return timeToMonitor;
+            }
         }
 
+        /// <summary>
+        /// Getting the Threshold value for alarm state
+        /// </summary>
+        /// <param name="sensorsToMonitor"></param>
+        /// <param name="edgar"></param>
+        /// <returns></returns>
         static int AlarmSystemDisplaythreshholdValue(string sensorsToMonitor, Finch edgar)
         {
             int thresholdValue = 0;
             int currentLeftSensorValue = edgar.getLeftLightSensor();
             int currentRightSensorValue = edgar.getRightLightSensor();
+            string userResponse;
+            bool validResponse = true;
 
             DisplayScreenHeader("threshold Value");
 
-            switch (sensorsToMonitor)
+            do
             {
-                case "left":
-                    Console.WriteLine($"Current {sensorsToMonitor} Sensor Value: {currentLeftSensorValue}");
-                    break;
+                Console.Write("\tEnter the desired frequency of measurements: ");
+                userResponse = Console.ReadLine();
+                validResponse = int.TryParse(userResponse, out thresholdValue);
 
-                case "right":
-                    Console.WriteLine($"Current {sensorsToMonitor} Sensor Value: {currentRightSensorValue}");
-                    break;
+                switch (sensorsToMonitor)
+                {
+                    case "Left":
+                        Console.WriteLine($"Current {sensorsToMonitor} Sensor Value: {currentLeftSensorValue}");
+                        break;
 
-                case "both":
-                    Console.WriteLine($"Current {sensorsToMonitor} Sensor Value: {currentLeftSensorValue}");
-                    Console.WriteLine($"Current {sensorsToMonitor} Sensor Value: {currentRightSensorValue}");
-                    break;
+                    case "Right":
+                        Console.WriteLine($"Current {sensorsToMonitor} Sensor Value: {currentRightSensorValue}");
+                        break;
 
-                default:
-                    Console.WriteLine("\tUnkown Sensor Reference");
-                    break;
-            }
+                    case "Both":
+                        Console.WriteLine($"Current {sensorsToMonitor} Sensor Value: {currentLeftSensorValue}");
+                        Console.WriteLine($"Current {sensorsToMonitor} Sensor Value: {currentRightSensorValue}");
+                        break;
 
-            //
-            // get threshold from user
-            //
+                    default:
+                        Console.WriteLine("\tUnkown Sensor Reference");
+                        break;
+                }
 
-            Console.Write("Enter Threshold Value: ");
-            thresholdValue = int.Parse(Console.ReadLine());
+                if (!validResponse)
+                {
+                    Console.WriteLine("\tPlease enter a number 1,2,3.4, ... etc.");
+                    Console.WriteLine();
+                }
 
-            // validate user inpute=s
-            //dont int.parse liek above
+            } while (!validResponse);
 
-
-
+            
 
             return thresholdValue;
         }
 
+        /// <summary>
+        /// Get user input for min max range type including min max and full words
+        /// </summary>
+        /// <returns></returns>
+        
         static string AlarmSystemDisplayRangeType()
         {
             string rangeType = "";
 
             DisplayScreenHeader("Range Type");
 
-            Console.Write("Enter Range Type [minimum, Maximum]");
-            rangeType = Console.ReadLine();
+            //
+            // validate user input
+            //
 
-            DisplayMenuPrompt("Alarm Ssytem");
+            rangeType = ValidateStringInput
+                (
+                "\tEnter range type [Minimum, Maximum]: ",
+                "\tPlease use Minimum or Maximum",
+                new string[] {"Minimum", "Maximum"}
+                );
 
-            return rangeType; ;
+            Console.WriteLine();
+            Console.WriteLine($"\tEdgar will now monitor until {rangeType} threshold is reached");
+            Console.CursorVisible = false;
+
+            DisplayMenuPrompt("Alarm Sytem");
+
+            return rangeType;
         }
 
+        /// <summary>
+        /// getting user decision to choose what sensors to watch
+        /// </summary>
+        /// <returns>which sensors left right or both</returns>
         static string AlarmSystemDisplaySetSensors()
         {
             string sensorsToMonitor = "";
+            
+            DisplayScreenHeader("Sensors To Monitor");
 
-            DisplayScreenHeader("Sensors to Monitor");
+            //
+            // validate user input
+            //
 
-            Console.Write("\tEnter Sensors to Monitor [Left, Right, both]");
-            sensorsToMonitor = Console.ReadLine();
+            sensorsToMonitor = ValidateStringInput
+                (
+                "\tEnter Sensors to Monitor [Left, Right, Both]: ",
+                "\tPlease use Left, Right or Both",
+                new string[] {"Left", "Right", "Both"}
+                );
 
-            DisplayMenuPrompt("Alarm Ssytem");
+            Console.WriteLine($"\tEdgar will now monitor {sensorsToMonitor} sensors");
+
+            DisplayMenuPrompt("Alarm Sytem");
+
+            Console.CursorVisible = false;
 
             return sensorsToMonitor;
         }
 
+        /// <summary>
+        /// Setting the alarm to start and display results
+        /// </summary>
+        /// <param name="edgar">Finch Robot</param>
+        /// <param name="sensorsToMonitor">which sensors were chosen</param>
+        /// <param name="rangeType">min or max</param>
+        /// <param name="minMaxThreshholdValue">threshold choice</param>
+        /// <param name="timeToMonitor">timeToMonitor</param>
         static void AlarmSystemSetAlarm
             (
             Finch edgar,
@@ -328,7 +758,6 @@ namespace Project_FinchControl
             )
 
         {
-
             bool thresholdExceeded = false;
             int secondsElapsed = 1;
             int leftLightSensorValue;
@@ -337,15 +766,16 @@ namespace Project_FinchControl
 
             DisplayScreenHeader("Set Alarm");
 
-            //echo values to user
-            Console.WriteLine("\t\tStart");
+            Console.WriteLine($"\tYou have chosen to monitor {sensorsToMonitor} sensor's, {rangeType} threshold, until it reaches {minMaxThreshholdValue}, or {timeToMonitor} seconds");
+            Console.WriteLine();
+            Console.CursorVisible = false;
+            Console.WriteLine("\tPress any key to begin");
 
             //promt user to start
             Console.ReadKey();
 
             do
             {
-
                 //
                 // get and display current light levels
                 //
@@ -355,15 +785,15 @@ namespace Project_FinchControl
 
                 switch (sensorsToMonitor)
                 {
-                    case "left":
+                    case "Left":
                         Console.WriteLine($"\tCurrent Left Light Sensor: {leftLightSensorValue}");
                         break;
 
-                    case "right":
+                    case "Right":
                         Console.WriteLine($"\tCurrent Right Light Sensor: {rightLightSensorValue}");
                         break;
 
-                    case "both":
+                    case "Both":
                         Console.WriteLine($"\tCurrent Left Light Sensor: {leftLightSensorValue}");
                         Console.WriteLine($"\tCurrent Right Light Sensor: {rightLightSensorValue}");
                         break;
@@ -383,11 +813,11 @@ namespace Project_FinchControl
                 //
                 // test for threshold exceeded
                 //
-
+                
                 switch (sensorsToMonitor)
                 {
-                    case "left":
-                        if (rangeType == "minimum")
+                    case "Left":
+                        if (rangeType == "minimum" || rangeType == "min" || rangeType == "Minimum" || rangeType == "Min")
                         {
                             thresholdExceeded = (leftLightSensorValue < minMaxThreshholdValue);
                         }
@@ -401,12 +831,14 @@ namespace Project_FinchControl
 
                         break;
 
-                    case "right":
-                        if (rangeType == "minimum")
+                    case "Right":
+                        if (rangeType == "minimum" || rangeType == "min" || rangeType == "Minimum" || rangeType == "Min")
                         {
                             if (rightLightSensorValue < minMaxThreshholdValue)
                             {
                                 thresholdExceeded = true;
+                                Console.WriteLine("\tThreshold has been exceeded Press any key to continue");
+                                Console.ReadKey();
                             }
                         }
 
@@ -417,16 +849,21 @@ namespace Project_FinchControl
                             if (rightLightSensorValue > minMaxThreshholdValue)
                             {
                                 thresholdExceeded = true;
+                                Console.WriteLine("\tThreshold has been exceeded Press any key to continue");
+                                Console.ReadKey();
                             }
                         }
                         break;
 
-                    case "both":
-                        if (rangeType == "minimum")
+                    case "Both":
+                        if (rangeType == "minimum" || rangeType == "min" || rangeType == "Minimum" || rangeType == "Min")
                         {
                             if ((leftLightSensorValue < minMaxThreshholdValue) || (rightLightSensorValue < minMaxThreshholdValue))
                             {
                                 thresholdExceeded = true;
+                                Console.WriteLine("\tThreshold has been exceeded Press any key to continue");
+                                Console.ReadKey();
+
                             }
                         }
 
@@ -437,6 +874,8 @@ namespace Project_FinchControl
                             if ((leftLightSensorValue > minMaxThreshholdValue) || (rightLightSensorValue > minMaxThreshholdValue))
                             {
                                 thresholdExceeded = true;
+                                Console.WriteLine("\tThreshold has been exceeded Press any key to continue");
+                                Console.ReadKey();
                             }
                         }
 
@@ -447,41 +886,41 @@ namespace Project_FinchControl
                         break;
                 }
 
-
-
-
             } while (!thresholdExceeded && (secondsElapsed <= timeToMonitor));
 
+            if (thresholdExceeded)
+            {
+                Console.WriteLine();
+                Console.WriteLine("\tThreshold Exceeded");
+                Console.WriteLine();
+                Console.WriteLine("\tPress any key to continue");
+                Console.ReadKey();
+            }
+
+            else
+            {
+                Console.WriteLine();
+                Console.WriteLine("\tThreshold Not Exceeded - time limit exceeded");
+                Console.WriteLine();
+                Console.WriteLine("\tPress any key to continue");
+                Console.ReadKey();
+            }
 
             //
             // Display result
             //
 
-            if (thresholdExceeded)
-            {
-                Console.WriteLine("\tThreshold Exceeded");
-            }
-
-            else
-            {
-                Console.WriteLine("\tThreshold Not Exceeded - time limit exceeded");
-            }
-
-
-
-
-
             switch (sensorsToMonitor)
             {
-                case "left":
+                case "Left":
 
                     break;
 
-                case "right":
+                case "Right":
 
                     break;
 
-                case "both":
+                case "Both":
 
                     break;
 
@@ -490,16 +929,16 @@ namespace Project_FinchControl
                     break;
             }
 
-
-
-
         }
 
         #endregion
 
         #region Data Recorder
 
-
+        /// <summary>
+        /// Getting number of Data points to retrieve
+        /// </summary>
+        /// <returns></returns>
         static int DataRecorderDisplayGetNumberOfDataPoints()
         {
             double numberOfDataPoints;
@@ -512,9 +951,7 @@ namespace Project_FinchControl
             {
                 Console.Write("\tEnter the desired number of measurements: ");
                 userResponse = Console.ReadLine();
-                validResponse = double.TryParse(userResponse, out numberOfDataPoints);
-
-                
+                validResponse = double.TryParse(userResponse, out numberOfDataPoints);                
 
                 if (!validResponse)
                 {
@@ -531,75 +968,42 @@ namespace Project_FinchControl
 
         }
 
+        /// <summary>
+        /// Getting time between data points with validation
+        /// </summary>
+        /// <returns></returns>
         static double DataRecorderDisplayGetDataPointFrequency()
         {
             double numberOfDataFrequency;
-            bool validResponse;
             string userResponse;
+            bool validResponse = true;            
 
             DisplayScreenHeader("Data Frequency");
 
             do
             {
                 Console.Write("\tEnter the desired frequency of measurements: ");
-                numberOfDataFrequency = double.Parse(Console.ReadLine());
                 userResponse = Console.ReadLine();
-
                 validResponse = double.TryParse(userResponse, out numberOfDataFrequency);
 
                 if (!validResponse)
                 {
-                    Console.WriteLine("Please enter a number 1,2,3.4, ... etc.");
+                    Console.WriteLine("\tPlease enter a number 1,2,3.4, ... etc.");
                     Console.WriteLine();
                 }
 
             } while (!validResponse);
 
-
+            Console.WriteLine($"\tYou chose {numberOfDataFrequency} as the frequency data readings.");
             DisplayContinuePrompt();
-
-
 
             return numberOfDataFrequency;
         }
 
-        static double[] DataRecorderDisplayGetDataPointFrequency(int numberOfDataPoints, double dataPointFrequency, Finch edgar)
-        {
-            double[] temperatures = new double[numberOfDataPoints];
-            int dataPointFrequencyMs;
-
-            //
-            // convert the frequency in seconds to milliseconds
-
-            dataPointFrequencyMs = (int)(dataPointFrequency * 1000);
-
-            DisplayScreenHeader("Data Frequency");
-
-
-            // echo the values
-
-            Console.WriteLine($"\tThe Finch Robot will now record {numberOfDataPoints} temperatures {dataPointFrequency} seconds apart.");
-            Console.WriteLine("\tPress any key to begin");
-            Console.ReadKey();
-
-            for (int index = 0; index < numberOfDataPoints; index++)
-            {
-                temperatures[index] = edgar.getTemperature();
-                edgar.wait(dataPointFrequencyMs);
-
-                //
-                // echo new temperature
-
-                Console.WriteLine($"\tTemperature {index + 1}: {temperatures[index]}");
-                edgar.wait(dataPointFrequencyMs);
-
-                DataRecorderDisplayData(temperatures);
-
-            }
-
-            return temperatures;
-        }
-
+        /// <summary>
+        /// Setting up menu for Data points collection
+        /// </summary>
+        /// <param name="edgar"></param>
         static void DataRecorderDisplayMenu(Finch edgar)
         {
             Console.CursorVisible = true;
@@ -674,14 +1078,11 @@ namespace Project_FinchControl
 
             //
             // convert the frequency in seconds to milliseconds
+            //
 
             dataPointFrequencyMs = (int)(dataPointFrequency * 1000);
 
             DisplayScreenHeader("Get Data");
-
-
-
-            // echo the values
 
             Console.WriteLine($"\tThe Finch Robot will now record {numberOfDataPoints} temperatures {dataPointFrequency} seconds apart.");
             Console.WriteLine("\tPress any key to begin");
@@ -693,16 +1094,13 @@ namespace Project_FinchControl
                 edgar.wait(dataPointFrequencyMs);
                 conversion[index] = ConvertCelsiusToFarenheit(temperatures[index]);
 
-
                 //
                 // echo new temperature
+                //
 
                 Console.WriteLine($"\tTemperature {index + 1}: {temperatures[index].ToString("n2")}");
                 edgar.wait(dataPointFrequencyMs);
-
-
             }
-
 
             return temperatures;
         }
@@ -722,23 +1120,15 @@ namespace Project_FinchControl
                 "-------------".PadLeft(20) +
                 "-----------------".PadLeft(15));
 
-
             for (int index = 0; index < temperatures.Length; index++)
             {
-
-
-
-
-                Console.WriteLine(
-                    (index + 1).ToString("n1").PadLeft(20) +
+                Console.WriteLine
+                    ((index + 1).ToString("n1").PadLeft(20) +
                     (ConvertCelsiusToFarenheit(temperatures[index])).ToString("n1").PadLeft(15));
-
-
             }
 
             DisplayContinuePrompt();
-
-        }
+            }
 
         static double ConvertCelsiusToFarenheit(double celsiusReading)
         {
@@ -1198,6 +1588,57 @@ namespace Project_FinchControl
             Console.WriteLine("\t\t" + headerText);
             Console.WriteLine();
         }
+
+
+        /// <summary>
+        /// Validate string 
+        /// created by JP 
+        /// </summary>
+        /// <param name="prompt"></param>
+        /// <param name="error"></param>
+        /// <param name="validInputs"></param>
+        /// <returns></returns>
+        static string ValidateStringInput(string prompt, string error, string [] validInputs)
+        {
+            bool validInput = false;
+            string userInput = "";
+            int index = 0;
+
+            //
+            // check for valid input
+            //
+
+            while (!validInput)
+            {
+                Console.Write(prompt);
+                userInput = Console.ReadLine();
+
+                for (index = 0; index < validInputs.Length; index++)
+                {
+                    if (validInputs[index].ToLower() == userInput.ToLower())
+                    {
+                        validInput = true;
+                        break;
+                    }
+
+                }
+
+                //
+                // if a bvalid input is not found display an error message
+                //
+                if (!validInput)
+                {
+                    Console.Write("\n{0}: ", error);
+                    Console.WriteLine();
+                    Console.ReadKey();
+                    Console.CursorVisible = false;
+                }
+            }
+
+            return validInputs[index];
+        }
+
+        
 
         #endregion
 
