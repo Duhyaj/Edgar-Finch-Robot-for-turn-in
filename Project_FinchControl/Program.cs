@@ -60,21 +60,10 @@ namespace Project_FinchControl
         }
 
         /// <summary>
-        /// setting LED Lights with pauses
-        /// </summary>
-        /// <param name="edgar"></param>
-        /// <param name="wait"></param>
-        /// <param name="afterWait"></param>
-        /// <param name="r"></param>
-        /// <param name="g"></param>
-        /// <param name="b"></param>
-
-        /// <summary>
         /// Show robot connect with lights sound and movement
         /// </summary>
         /// <param name="edgar"></param>
         /// 
-
         static void ShowEdgarConnect(Finch edgar)
         {
             TalentShowPlayMarioLightsSoundMove(edgar, 659, 300, 300, 0, 255, 0, 255, -255);
@@ -87,8 +76,7 @@ namespace Project_FinchControl
         /// </summary>
         /// <param name="l"></param>
         /// <param name="t"></param>
-        /// <param name="label"></param>      
-
+        /// <param name="label"></param> 
         static void SetCursorPosition(int l, int t, string label = "")
         {
             Console.SetCursorPosition(l, t);
@@ -171,6 +159,10 @@ namespace Project_FinchControl
 
         #region USER PROGRAMMING
 
+        /// <summary>
+        /// User Proigramming Menu
+        /// </summary>
+        /// <param name="edgar"></param>
         static void UserProgrammingDisplayUserProgrammingMenu(Finch edgar)
         {
             Console.CursorVisible = true;
@@ -245,7 +237,6 @@ namespace Project_FinchControl
         /// </summary>
         /// <param name="edgar"></param>
         static void UserProgrammingSpinEdgar(Finch edgar)
-
         { 
             int note = 1056;
             int r = 0;
@@ -266,6 +257,12 @@ namespace Project_FinchControl
             edgar.wait(afterWait);
         }
 
+        /// <summary>
+        /// Display Commands as they execute
+        /// </summary>
+        /// <param name="edgar"></param>
+        /// <param name="commands"></param>
+        /// <param name="commandParameters"></param>
         static void UserProgrammingDisplayExecuteCommands
             (Finch edgar, 
             List<Command> commands, 
@@ -368,6 +365,10 @@ namespace Project_FinchControl
             DisplayContinuePrompt();
         }
 
+        /// <summary>
+        /// View Commands input by user
+        /// </summary>
+        /// <param name="commands"></param>
         static void UserProgrammingDisplayViewCommands(List<Command> commands)
         {
             DisplayScreenHeader("View Commands");
@@ -386,6 +387,10 @@ namespace Project_FinchControl
             DisplayContinuePrompt();
         }
 
+        /// <summary>
+        /// Get command from user
+        /// </summary>
+        /// <returns></returns>
         static List<Command> UserProgrammingDisplayGetCommands()
         {
             List<Command> commands = new List<Command>();
@@ -450,7 +455,7 @@ namespace Project_FinchControl
         }
 
         /// <summary>
-        /// 
+        /// Get command parameters from user
         /// </summary>
         /// <returns></returns>
         static (int motorSpeed, int ledBrightness, double waitSeconds) UserProgrammingDisplayGetCommandParameters()
