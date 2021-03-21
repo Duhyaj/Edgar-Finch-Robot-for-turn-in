@@ -4,7 +4,6 @@ using System.IO;
 using FinchAPI;
 using System.Linq;
 
-
 namespace Project_FinchControl
 {
 
@@ -19,9 +18,22 @@ namespace Project_FinchControl
     // Last Modified: 1/25/2020
     //
     // **************************************************
-
+    public enum Command
+    {
+        //NONE,
+        MOVEFORWARD,
+        MOVEBACKWARD,
+        STOPMOTORS,
+        WAIT,
+        TURNRIGHT,
+        TURNLEFT,
+        LEDON,
+        LEDOFF,
+        GETTEMPERATURE,
+        SPINEDGAR,
+        DONE
+    }
     class Program
-
 
     {
         /// <summary>
@@ -37,6 +49,7 @@ namespace Project_FinchControl
             DisplayClosingScreen();
         }
 
+        #region CONSOLE THEME
         /// <summary>
         /// setup the console theme
         /// </summary>
@@ -55,7 +68,6 @@ namespace Project_FinchControl
         /// <param name="r"></param>
         /// <param name="g"></param>
         /// <param name="b"></param>
-
 
         /// <summary>
         /// Show robot connect with lights sound and movement
@@ -106,7 +118,7 @@ namespace Project_FinchControl
                 Console.WriteLine("\tb) Talent Show");
                 Console.WriteLine("\tc) Data Recorder");
                 Console.WriteLine("\td) Alarm System");
-                Console.WriteLine("\te) ");
+                Console.WriteLine("\te) User Programming");
                 Console.WriteLine("\tf) Disconnect Finch Robot");
                 Console.WriteLine("\tq) Quit");
                 Console.Write("\t\tEnter Choice:");
@@ -134,7 +146,7 @@ namespace Project_FinchControl
                         break;
 
                     case "e":
-
+                        UserProgrammingDisplayUserProgrammingMenu(edgar);
                         break;
 
                     case "f":
@@ -155,8 +167,320 @@ namespace Project_FinchControl
 
             } while (!quitApplication);
         }
+        #endregion
 
+        #region USER PROGRAMMING
 
+        static void UserProgrammingDisplayUserProgrammingMenu(Finch edgar)
+        {
+            Console.CursorVisible = true;
+
+            bool quitApplication = false;
+            string menuChoice;
+
+            (int motorSpeed, int ledBrightness, double waitSeconds) commandParameters = (0, 0, 0);
+            List<Command> commands = new List<Command>();
+
+            //List<(Command command, int duration) > = new List<(Command command, int duration)>;
+
+            do
+            {
+                DisplayScreenHeader("Main Menu");
+
+                //
+                // get user menu choice
+                //
+                Console.WriteLine("\ta) Set Parameters");
+                Console.WriteLine("\tb) Add Commands");
+                Console.WriteLine("\tc) View Commands");
+                Console.WriteLine("\td) Execute Commands");
+                Console.WriteLine("\tf) Disconnect Finch Robot");
+                Console.WriteLine("\tq) Quit");
+                Console.Write("\t\tEnter Choice:");
+                menuChoice = Console.ReadLine().ToLower();
+
+                //
+                // process user menu choice
+                //
+                switch (menuChoice)
+                {
+                    case "a":
+                        commandParameters = UserProgrammingDisplayGetCommandParameters();
+                        break;
+
+                    case "b":
+                        commands = UserProgrammingDisplayGetCommands();
+                        break;
+
+                    case "c":
+                        UserProgrammingDisplayViewCommands(commands);
+                        break;
+
+                    case "d":
+                        UserProgrammingDisplayExecuteCommands(edgar, commands, commandParameters);
+                        break;
+
+                    case "f":
+                        DisplayDisconnectFinchRobot(edgar);
+                        break;
+
+                    case "q":
+                        DisplayDisconnectFinchRobot(edgar);
+                        quitApplication = true;
+                        break;
+
+                    default:
+                        Console.WriteLine();
+                        Console.WriteLine("\tPlease enter a letter for the menu choice.");
+                        DisplayContinuePrompt();
+                        break;
+                }
+
+            } while (!quitApplication);
+
+        }
+
+        /// <summary>
+        /// Make Edgar Spin
+        /// </summary>
+        /// <param name="edgar"></param>
+        static void UserProgrammingSpinEdgar(Finch edgar)
+
+        { 
+            int note = 1056;
+            int r = 0;
+            int g = 255;
+            int b = 255;
+            int p = 255;
+            int s = -255;
+            int noteWait = 2;
+            int afterWait = 3;
+
+            edgar.noteOn(note);
+            edgar.setLED(r, g, b);
+            edgar.setMotors(p, s);
+            edgar.wait(noteWait);
+            edgar.noteOff();
+            edgar.setLED(0, 0, 0);
+            edgar.setMotors(0, 0);
+            edgar.wait(afterWait);
+        }
+
+        static void UserProgrammingDisplayExecuteCommands
+            (Finch edgar, 
+            List<Command> commands, 
+            (int motorSpeed, 
+            int ledBrightness, 
+            double waitSeconds) commandParameters)
+        {
+            int motorSpeed = commandParameters.motorSpeed;
+            int ledBrightness = commandParameters.ledBrightness;
+            double waitSeconds = (int)commandParameters.waitSeconds;            
+
+            DisplayScreenHeader("Execute Commands");
+
+            Console.WriteLine("\tEdgar will now execute all commands");
+
+            DisplayContinuePrompt();
+
+            foreach (Command command in commands)
+            {
+                switch (command)
+                {
+
+                    case Command.MOVEFORWARD:
+
+                        edgar.setMotors(motorSpeed, motorSpeed);
+
+                        break;
+                    case Command.MOVEBACKWARD:
+
+                        edgar.setMotors(-motorSpeed, -motorSpeed);
+
+                        break;
+
+                    case Command.STOPMOTORS:
+
+                        edgar.setMotors(0, 0);
+
+                        break;
+
+                    case Command.WAIT:
+
+                        int waitMilliseconds = (int)waitSeconds * 1000;
+                        edgar.wait(waitMilliseconds);
+
+                        break;
+
+                    case Command.TURNRIGHT:
+
+                        edgar.setMotors(motorSpeed, 0);
+
+                        break;
+
+                    case Command.TURNLEFT:
+
+                        edgar.setMotors(0, motorSpeed);
+
+                        break;
+
+                    case Command.LEDON:
+
+                        edgar.setLED(ledBrightness, ledBrightness, ledBrightness);
+
+                        break;
+
+                    case Command.LEDOFF:
+
+                        edgar.setLED(0, 0, 0);
+
+                        break;
+
+                    case Command.GETTEMPERATURE:
+
+                        Console.WriteLine($"\tThe temperature is {edgar.getTemperature().ToString("n2")}\n");
+
+                        break;
+
+                    case Command.SPINEDGAR:
+
+                        UserProgrammingSpinEdgar(edgar);
+
+                        break;
+
+                    case Command.DONE:
+
+                        edgar.setMotors(0, 0);
+                        edgar.setLED(0, 0, 0);
+
+                        break;
+
+                    default:
+
+                        Console.WriteLine();
+                        Console.WriteLine("\tUnknown Command Error");
+
+                        break;
+                }
+                Console.WriteLine($"\tCommand: {command}");
+            }
+
+            DisplayContinuePrompt();
+        }
+
+        static void UserProgrammingDisplayViewCommands(List<Command> commands)
+        {
+            DisplayScreenHeader("View Commands");
+
+            int commandCount = 1;
+
+            Console.WriteLine("\tCommand List");
+            Console.WriteLine("\t------------");
+
+            foreach (Command command in commands)
+            {
+                Console.Write($"\t{command}");
+                if (commandCount % 1 == 0) Console.Write("\n");                
+            }
+
+            DisplayContinuePrompt();
+        }
+
+        static List<Command> UserProgrammingDisplayGetCommands()
+        {
+            List<Command> commands = new List<Command>();
+            bool isDone = false;
+            string userResponse;
+            int numberShown = 0;
+
+            DisplayScreenHeader("User Commands");
+            Console.WriteLine("\tPlease enter one of the following");
+            Console.WriteLine("\n\t");
+            foreach (string commandName in Enum.GetNames(typeof(Command))) 
+            {
+                if (numberShown == 0)
+                {
+                    Console.Write("\t");
+                }
+
+                else if (numberShown > 6)
+                {
+                    numberShown = 0;
+                    Console.WriteLine();
+                    Console.Write("\t");
+                }
+
+                numberShown++;
+                Console.Write(commandName + " | ");
+            }
+
+            Console.WriteLine("\n");
+
+                do
+            {
+
+                Console.Write("\tCommand: ");
+                userResponse = Console.ReadLine();
+
+                if (userResponse != "done")
+
+                {
+                    if(Enum.TryParse(userResponse.ToUpper(), out Command command))
+                    {
+
+                        commands.Add(command);
+
+                    }
+                    else
+                    {
+                        Console.WriteLine("\tPlease enter one of the following");
+                    }
+                }
+
+                else
+                {
+                    isDone = true;
+                }   
+
+            } while (!isDone);
+
+            DisplayContinuePrompt();
+
+            return commands;
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
+        static (int motorSpeed, int ledBrightness, double waitSeconds) UserProgrammingDisplayGetCommandParameters()
+        {
+            (int motorSpeed, int ledBrightness, double waitSeconds) commandParameters;
+
+            DisplayScreenHeader("Command Parameters");
+
+            commandParameters.motorSpeed = ValidateIntInput
+                ("Motor Speed", 
+                "Enter Motor Speed: ", 
+                "Please enter a number [1-255]",
+                "for Motor Speed");
+
+            commandParameters.ledBrightness = ValidateIntInput
+                ("LED Brightness", 
+                "Enter Brightness: ", 
+                "Please enter a number between [1-255]",
+                "for LED Brightness");
+
+            commandParameters.waitSeconds = ValidateIntInput
+                ("Wait Time", 
+                "Enter Wait Time in Seconds: ", 
+                "Please enter a number [1-255]",
+                "Seconds");
+
+            return commandParameters;
+        }
+
+        #endregion
 
         //#region Alarm System Temperature
 
@@ -203,7 +527,6 @@ namespace Project_FinchControl
 
         //                break;
 
-
         //            case "b":
 
         //                timeToMonitor = AlarmSystemDisplayTempTimeToMonitor();
@@ -223,8 +546,6 @@ namespace Project_FinchControl
         //                break;
 
         //            case "e":
-
-
 
         //                break;
 
@@ -339,8 +660,6 @@ namespace Project_FinchControl
 
         //    } while (!validResponse);
 
-
-
         //    return thresholdValue;
         //}
 
@@ -383,132 +702,6 @@ namespace Project_FinchControl
         ///// <param name="rangeType">min or max</param>
         ///// <param name="minMaxThreshholdValue">threshold choice</param>
         ///// <param name="timeToMonitor">timeToMonitor</param>
-        //static void AlarmSystemSetTempAlarm
-        //    (
-        //    Finch edgar,
-        //    double currentTemperature,
-        //    string rangeType,
-        //    int minMaxThreshholdValue,
-        //    int timeToMonitor
-        //    )
-
-        //{
-        //    bool thresholdExceeded = false;
-        //    int secondsElapsed = 1;
-        //    int leftLightSensorValue;
-        //    int rightLightSensorValue;
-
-
-        //    DisplayScreenHeader("Set Alarm");
-
-        //    Console.WriteLine($"\tYou have chosen to monitor {rangeType} threshold, until it reaches {minMaxThreshholdValue}, or {timeToMonitor} seconds");
-        //    Console.WriteLine();
-        //    Console.CursorVisible = false;
-        //    Console.WriteLine("\tPress any key to begin");
-
-        //    //promt user to start
-        //    Console.ReadKey();
-
-        //    do
-        //    {
-        //        //
-        //        // get and display current light levels
-        //        //
-
-        //        currentTemperature = edgar.getTemperature();
-
-        //        //
-        //        // wait 1 second
-        //        //
-
-        //        edgar.wait(1000);
-        //        secondsElapsed++;
-
-        //        //
-        //        // test for threshold exceeded
-        //        //
-
-
-        //                if (rangeType == "minimum" || rangeType == "min" || rangeType == "Minimum" || rangeType == "Min")
-        //                {
-        //                    thresholdExceeded = (leftLightSensorValue < minMaxThreshholdValue);
-        //                }
-
-        //                //max
-
-        //                else
-        //                {
-        //                    thresholdExceeded = (leftLightSensorValue > minMaxThreshholdValue);
-        //                }
-
-  
-
-        //                    }
-        //                }
-
-        //                // max
-
-        //                else
-        //                {
-        //                    if ((leftLightSensorValue > minMaxThreshholdValue) || (rightLightSensorValue > minMaxThreshholdValue))
-        //                    {
-        //                        thresholdExceeded = true;
-        //                        Console.WriteLine("\tThreshold has been exceeded Press any key to continue");
-        //                        Console.ReadKey();
-        //                    }
-        //                }
-
-        //                break;
-
-        //            default:
-        //                Console.WriteLine("\tUnkown Sensor Reference");
-        //                break;
-        //        }
-
-        //    } while (!thresholdExceeded && (secondsElapsed <= timeToMonitor));
-
-        //    if (thresholdExceeded)
-        //    {
-        //        Console.WriteLine();
-        //        Console.WriteLine("\tThreshold Exceeded");
-        //        Console.WriteLine();
-        //        Console.WriteLine("\tPress any key to continue");
-        //        Console.ReadKey();
-        //    }
-
-        //    else
-        //    {
-        //        Console.WriteLine();
-        //        Console.WriteLine("\tThreshold Not Exceeded - time limit exceeded");
-        //        Console.WriteLine();
-        //        Console.WriteLine("\tPress any key to continue");
-        //        Console.ReadKey();
-        //    }
-
-        //    //
-        //    // Display result
-        //    //
-
-        //    switch (sensorsToMonitor)
-        //    {
-        //        case "Left":
-
-        //            break;
-
-        //        case "Right":
-
-        //            break;
-
-        //        case "Both":
-
-        //            break;
-
-        //        default:
-        //            Console.WriteLine("\tUnkown Sensor Reference");
-        //            break;
-        //    }
-
-        //}
 
         //#endregion
 
@@ -1198,8 +1391,7 @@ namespace Project_FinchControl
                 }
 
             } while (!quitTalentShowMenu);
-        }
-        
+        }        
         
         /// <summary>
         /// Dancing to Mario song menu selection
@@ -1414,6 +1606,15 @@ namespace Project_FinchControl
             edgar.setMotors(p, s);
         }
 
+        /// <summary>
+        /// Display Light colors
+        /// </summary>
+        /// <param name="edgar"></param>
+        /// <param name="wait"></param>
+        /// <param name="afterWait"></param>
+        /// <param name="r"></param>
+        /// <param name="g"></param>
+        /// <param name="b"></param>
         static void colorLight(Finch edgar, int wait, int afterWait, int r = 0, int g = 0, int b = 0)
         {
             edgar.setLED(r, g, b);
@@ -1637,6 +1838,41 @@ namespace Project_FinchControl
 
             return validInputs[index];
         }
+
+        static int ValidateIntInput(string header, string prompt, string error, string confirmation)
+        {
+            string userResponse;
+            int userInteger;
+
+            DisplayScreenHeader(header);
+
+            {
+                bool validResponse = true;
+
+                do
+                {
+                    Console.Write("\t" + prompt);
+                    userResponse = Console.ReadLine();
+                    validResponse = int.TryParse(userResponse, out userInteger);
+
+                    if (!validResponse)
+                    {
+                        Console.WriteLine("\t" + error);
+                        Console.WriteLine();
+                    }
+
+                } while (!validResponse);
+
+                Console.WriteLine($"\t you chose {userResponse} " + confirmation);
+                DisplayContinuePrompt();
+
+                return userInteger;
+            }
+
+
+
+        }
+
 
         
 
