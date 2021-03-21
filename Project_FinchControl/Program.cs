@@ -160,7 +160,7 @@ namespace Project_FinchControl
         #region USER PROGRAMMING
 
         /// <summary>
-        /// User Proigramming Menu
+        /// User Programming Menu
         /// </summary>
         /// <param name="edgar"></param>
         static void UserProgrammingDisplayUserProgrammingMenu(Finch edgar)
@@ -311,13 +311,13 @@ namespace Project_FinchControl
 
                     case Command.TURNRIGHT:
 
-                        edgar.setMotors(motorSpeed, 0);
+                        edgar.setMotors(motorSpeed, -255);
 
                         break;
 
                     case Command.TURNLEFT:
 
-                        edgar.setMotors(0, motorSpeed);
+                        edgar.setMotors(-255, motorSpeed);
 
                         break;
 
@@ -399,7 +399,7 @@ namespace Project_FinchControl
             int numberShown = 0;
 
             DisplayScreenHeader("User Commands");
-            Console.WriteLine("\tPlease enter one of the following");
+            Console.WriteLine("\tPlease enter from the following list");
             Console.WriteLine("\n\t");
             foreach (string commandName in Enum.GetNames(typeof(Command))) 
             {
@@ -438,7 +438,7 @@ namespace Project_FinchControl
                     }
                     else
                     {
-                        Console.WriteLine("\tPlease enter one of the following");
+                        Console.WriteLine("\tPlease enter a listed command");
                     }
                 }
 
