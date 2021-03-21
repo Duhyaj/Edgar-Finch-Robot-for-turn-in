@@ -9,13 +9,13 @@ namespace Project_FinchControl
 
     // **************************************************
     //
-    // Title: Finch Control - Menu Starter
+    // Title: Finch Control 
     // Description: Starter solution with the helper methods,
     //              opening and closing screens, and the menu
     // Application Type: Console
-    // Author: Velis, John
+    // Author: James Hudson
     // Dated Created: 1/22/2020
-    // Last Modified: 1/25/2020
+    // Last Modified: 3/21/2020
     //
     // **************************************************
     public enum Command
