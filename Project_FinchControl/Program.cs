@@ -43,7 +43,7 @@ namespace Project_FinchControl
         static void Main(string[] args)
         {
 
-            SetCursorPosition(1, 1, "Application Theme");
+            SetCursorPosition(1, 1, "");
             SetTheme();
             
             WriteThemeData(Console.ForegroundColor, Console.BackgroundColor);
@@ -80,7 +80,7 @@ namespace Project_FinchControl
             Console.WriteLine($"\tCurrent background color: {Console.BackgroundColor}");
             Console.WriteLine();
 
-            Console.Write("\tWould you like to change Edgar's Theme [yes | no]?");
+            Console.Write("\tWould you like to change Edgar's Theme [yes | no]? ");
             if (Console.ReadLine().ToLower() == "yes")
             {
                 do
@@ -95,7 +95,7 @@ namespace Project_FinchControl
                     DisplayScreenHeader("Set Application Theme");
 
                     Console.WriteLine($"\tNew foreground color: {Console.ForegroundColor}");
-                    Console.WriteLine($"\tNew background color: {Console.BackgroundColor}");
+                    Console.WriteLine($"\tNew background color:  {Console.BackgroundColor}");
 
                     Console.WriteLine();
                     Console.Write("\tIs this the theme you would like to keep? ");
@@ -125,12 +125,14 @@ namespace Project_FinchControl
 
             do
             {
+                Console.WriteLine();
                 Console.Write($"\tEnter a value for the {property}: ");
                 validConsoleColor = Enum.TryParse(Console.ReadLine(), true, out consoleColor);
 
                 if (!validConsoleColor)
                 {
-                    Console.WriteLine("\n\t Please enter a  valid console color. ");
+                    Console.WriteLine("\n\t Please enter a  valid console color.");
+                    Console.WriteLine();
                 }
                 else
                 {
@@ -170,7 +172,46 @@ namespace Project_FinchControl
         static void WriteThemeData(ConsoleColor foreground, ConsoleColor background)
         {
 
-            string dataPath = @"Data\Theme.txt";
+            string dataPath = @"Dta\Theme.txt";
+            string data;
+            string errorMessage = "";
+            
+            {
+                try
+                {
+                    data = File.ReadAllText(dataPath);
+                }
+                catch (DirectoryNotFoundException ex)
+                {
+
+                    Console.WriteLine("Error: Folder not found");
+                    errorMessage = ex.Message;
+
+                }
+                catch (FileNotFoundException ex)
+                {
+                    Console.WriteLine("Error: File not found");
+                    errorMessage = ex.Message;
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine("Error: File I/O Error");
+                    errorMessage = ex.Message;
+                }
+                finally
+                {
+                    if (errorMessage != "")
+                    {
+                        Console.WriteLine(errorMessage);
+                    }
+                }
+
+                //Console.WriteLine();
+                //Console.WriteLine("\tPress any Key to Continue.");
+                //Console.ReadKey();
+
+            }
+
 
             File.WriteAllText(dataPath, foreground.ToString() + "\n");
             File.AppendAllText(dataPath, background.ToString());
