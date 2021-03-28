@@ -42,9 +42,14 @@ namespace Project_FinchControl
         /// <param name="args"></param>
         static void Main(string[] args)
         {
-            SetTheme();
 
+            SetCursorPosition(1, 1, "Application Theme");
+            SetTheme();
+            
+            WriteThemeData(Console.ForegroundColor, Console.BackgroundColor);
+            DisplaySetTheme();
             DisplayWelcomeScreen();
+            
             DisplayMenuScreen();
             DisplayClosingScreen();
         }
@@ -55,20 +60,120 @@ namespace Project_FinchControl
         /// </summary>
         static void SetTheme()
         {
-            Console.ForegroundColor = ConsoleColor.DarkBlue;
+            Console.ForegroundColor = ConsoleColor.Blue;
             Console.BackgroundColor = ConsoleColor.White;
         }
 
-        /// <summary>
-        /// Show robot connect with lights sound and movement
-        /// </summary>
-        /// <param name="edgar"></param>
-        /// 
-        static void ShowEdgarConnect(Finch edgar)
+        static void DisplaySetTheme()
         {
-            TalentShowPlayMarioLightsSoundMove(edgar, 659, 300, 300, 0, 255, 0, 255, -255);
-            TalentShowPlayMarioLightsSoundMove(edgar, 659, 300, 300, 255, 0, 0, -255, 255);
-            TalentShowPlayMarioLightsSoundMove(edgar, 659, 300, 300, 0, 0, 255, 0, 0);
+            (ConsoleColor foregroundColor, ConsoleColor backgroundColor) themeColors;
+            bool themeChosen = false;
+
+            themeColors = ReadThemeData();
+            Console.ForegroundColor = themeColors.foregroundColor;
+            Console.BackgroundColor = themeColors.backgroundColor;
+            Console.Clear();
+
+            DisplayScreenHeader("Application Theme");
+
+            Console.WriteLine($"\tCurrent foreground color: {Console.ForegroundColor}");
+            Console.WriteLine($"\tCurrent background color: {Console.BackgroundColor}");
+            Console.WriteLine();
+
+            Console.Write("\tWould you like to change Edgar's Theme [yes | no]?");
+            if (Console.ReadLine().ToLower() == "yes")
+            {
+                do
+                {
+                    themeColors.foregroundColor = GetConsoleColorFromUser("Foreground");
+                    themeColors.backgroundColor = GetConsoleColorFromUser("Background");
+
+                    Console.ForegroundColor = themeColors.foregroundColor;
+                    Console.BackgroundColor = themeColors.backgroundColor;
+                    Console.Clear();
+
+                    DisplayScreenHeader("Set Application Theme");
+
+                    Console.WriteLine($"\tNew foreground color: {Console.ForegroundColor}");
+                    Console.WriteLine($"\tNew background color: {Console.BackgroundColor}");
+
+                    Console.WriteLine();
+                    Console.Write("\tIs this the theme you would like to keep? ");
+
+                    if (Console.ReadLine().ToLower() == "yes")
+                    {
+                        themeChosen = true;
+                        WriteThemeData(themeColors.foregroundColor, themeColors.backgroundColor);
+                    }
+
+                } while (!themeChosen);
+            }
+
+            DisplayContinuePrompt();
+
+        }
+        
+        /// <summary>
+        /// Get Console Color from user
+        /// </summary>
+        /// <param name="property"></param>
+        /// <returns></returns>
+        static ConsoleColor GetConsoleColorFromUser(string property)
+        {
+            ConsoleColor consoleColor;
+            bool validConsoleColor;
+
+            do
+            {
+                Console.Write($"\tEnter a value for the {property}: ");
+                validConsoleColor = Enum.TryParse(Console.ReadLine(), true, out consoleColor);
+
+                if (!validConsoleColor)
+                {
+                    Console.WriteLine("\n\t Please enter a  valid console color. ");
+                }
+                else
+                {
+                    validConsoleColor = true;
+                }
+
+            } while (!validConsoleColor);
+            
+            
+            return consoleColor; 
+        }
+
+        /// <summary>
+        /// Read colors from Data File
+        /// </summary>
+        /// <returns></returns>
+        static (ConsoleColor foregroundColor, ConsoleColor backgroundColor) ReadThemeData()
+        {
+            string dataPath = @"Data\Theme.txt";
+            string[] themeColors;
+
+            ConsoleColor foregroundColor;
+            ConsoleColor backgroundColor;
+
+            themeColors = File.ReadAllLines(dataPath);
+            Enum.TryParse(themeColors[0], true, out foregroundColor);
+            Enum.TryParse(themeColors[1], true, out backgroundColor);
+
+            return (foregroundColor, backgroundColor);
+        }
+
+        /// <summary>
+        /// Write Lines to data path
+        /// </summary>
+        /// <param name="foreground"></param>
+        /// <param name="background"></param>
+        static void WriteThemeData(ConsoleColor foreground, ConsoleColor background)
+        {
+
+            string dataPath = @"Data\Theme.txt";
+
+            File.WriteAllText(dataPath, foreground.ToString() + "\n");
+            File.AppendAllText(dataPath, background.ToString());
         }
 
         /// <summary>
@@ -81,6 +186,20 @@ namespace Project_FinchControl
         {
             Console.SetCursorPosition(l, t);
             Console.WriteLine(label);
+        }
+        #endregion
+
+        #region Connect Edgar
+        /// <summary>
+        /// Show robot connect with lights sound and movement
+        /// </summary>
+        /// <param name="edgar"></param>
+        /// 
+        static void ShowEdgarConnect(Finch edgar)
+        {
+            TalentShowPlayMarioLightsSoundMove(edgar, 659, 300, 300, 0, 255, 0, 255, -255);
+            TalentShowPlayMarioLightsSoundMove(edgar, 659, 300, 300, 255, 0, 0, -255, 255);
+            TalentShowPlayMarioLightsSoundMove(edgar, 659, 300, 300, 0, 0, 255, 0, 0);
         }
 
         /// <summary>
